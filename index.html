@@ -1,0 +1,589 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-Hant"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;互動式組織效能診斷報告 (Gemini 增強版)&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Chosen Palette: Warm Neutrals --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Application Structure Plan: The SPA is designed with a top-down, dashboard-like approach. The user starts with a high-level "總覽" (Overview) featuring key challenges and a core data visualization. They can then drill down into "問題診斷" (Problem Diagnosis) to explore the four detailed findings via an interactive tab system, preventing information overload. Finally, the "轉型藍圖" (Transformation Blueprint) section presents the solution as an interactive, three-stage timeline. This structure guides the user from the "what" (problem) to the "why" (analysis) and finally the "how" (solution) in an intuitive, non-linear flow that enhances comprehension and engagement over a static document. --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Visualization &amp; Content Choices:<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>1. Report Info: Executive Summary's 30% wasted management time. -&gt; Goal: Inform/Impact. -&gt; Viz: Donut Chart. -&gt; Interaction: Hover for details. -&gt; Justification: Visually striking, immediately communicates the scale of the efficiency problem. -&gt; Library: Chart.js (Canvas).</p>
+<p class="p1"><span class="Apple-converted-space">        </span>2. Report Info: Four detailed findings (2.1-2.4). -&gt; Goal: Organize/Compare. -&gt; Presentation: Interactive Tabbed Interface. -&gt; Interaction: Click tabs to reveal detailed content (Observations vs. Root Cause). -&gt; Justification: Breaks down dense information into manageable chunks, allowing users to focus on one issue at a time. -&gt; Library/Method: Vanilla JS + HTML/CSS.</p>
+<p class="p1"><span class="Apple-converted-space">        </span>3. Report Info: Three-stage transformation plan (3.1-3.3). -&gt; Goal: Change/Organize. -&gt; Presentation: Interactive Timeline/Stage cards. -&gt; Interaction: Click on a stage to expand and view detailed actions. -&gt; Justification: Visualizes the phased approach, making the strategic plan clearer and more digestible than a long list. -&gt; Library/Method: Vanilla JS + HTML/CSS.</p>
+<p class="p1"><span class="Apple-converted-space">    </span>--&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Noto Sans TC', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #FDFBF8;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #3D405B;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.nav-link {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s ease;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 2px solid transparent;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.nav-link.active, .nav-link:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #3A86FF;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom-color: #3A86FF;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tab-btn.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #3A86FF;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #FFFFFF;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.stage-card.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: #3A86FF;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 14px 0 rgba(58, 134, 255, 0.1);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.content-section {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.content-section.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.chart-container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 400px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-left: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-right: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 300px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-height: 400px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@media (min-width: 768px) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.chart-container {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>height: 350px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.gemini-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, #6a82fb, #fc5c7d);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s ease;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.gemini-btn:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(-2px);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 12px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.loader {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 4px solid #f3f3f3;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-top: 4px solid #3A86FF;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 40px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 40px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: spin 1s linear infinite;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes spin {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: rotate(0deg); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: rotate(360deg); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body class="antialiased"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;nav class="container mx-auto px-6 py-4 flex justify-between items-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h1 class="text-xl md:text-2xl font-bold text-gray-800"&gt;組織效能診斷報告&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-sm text-gray-500"&gt;✨ Gemini 增強版&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="hidden md:flex space-x-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#overview" class="nav-link active font-medium pb-1"&gt;總覽&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#diagnosis" class="nav-link font-medium pb-1"&gt;問題診斷&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#blueprint" class="nav-link font-medium pb-1"&gt;轉型藍圖&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/nav&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="container mx-auto px-6 py-8 md:py-12"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;section id="overview" class="content-section active"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-center mb-12"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-3xl md:text-4xl font-bold mb-2"&gt;三大核心挑戰&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-lg text-gray-600 max-w-3xl mx-auto"&gt;公司成長動能受限於管理、人才與知識三大層面的內部瓶頸。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid md:grid-cols-3 gap-8 mb-16"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="text-3xl mb-4 text-blue-500"&gt;➔&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 class="text-xl font-bold mb-2"&gt;管理權責失衡&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-gray-600"&gt;高階主管過度涉入日常瑣事，決策效率低下，抑制中階人才成長與企業戰略規劃。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="text-3xl mb-4 text-amber-500"&gt;➔&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 class="text-xl font-bold mb-2"&gt;人才策略僵化&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-gray-600"&gt;缺乏系統性員工關懷與培訓，組織活力匱乏，難以吸引並留住追求成長的新世代人才。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="text-3xl mb-4 text-emerald-500"&gt;➔&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 class="text-xl font-bold mb-2"&gt;知識資產流失&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-gray-600"&gt;核心知識與流程高度依賴個人經驗，傳承面臨斷層風險，限制了企業的規模化擴張。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 class="text-2xl font-bold text-center mb-2"&gt;高階管理層時間分配警訊&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-center text-gray-600 mb-6"&gt;初步估算，高階主管約有30%的寶貴工時被低附加價值事務所佔據。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="chart-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;canvas id="timeAllocationChart"&gt;&lt;/canvas&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;section id="diagnosis" class="content-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-center mb-12"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-3xl md:text-4xl font-bold mb-2"&gt;四大核心發現&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-lg text-gray-600 max-w-3xl mx-auto"&gt;點擊下方頁籤，深入了解限制組織發展的根本問題。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="diagnosis-tabs" class="mb-8 flex flex-wrap justify-center gap-2 md:gap-4"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="diagnosis-content" class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80 min-h-[300px]"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;section id="blueprint" class="content-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-center mb-12"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-3xl md:text-4xl font-bold mb-2"&gt;三階段轉型行動藍圖&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-lg text-gray-600 max-w-3xl mx-auto"&gt;一套由淺入深、循序漸進的系統性改革方案。點擊卡片查看各階段行動細節。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="blueprint-stages" class="grid md:grid-cols-3 gap-8"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="blueprint-details" class="mt-8 bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80 min-h-[200px]"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;footer class="text-center py-8 mt-12 border-t"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="text-gray-500"&gt;&amp;copy; 2025 策略顧問。此為基於真實觀察的模擬分析報告。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/footer&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="gemini-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="flex justify-between items-center p-4 border-b"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 id="gemini-modal-title" class="text-xl font-bold"&gt;✨ Gemini AI 智慧助理&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="gemini-modal-close" class="text-gray-500 hover:text-gray-800"&gt;&amp;times;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="gemini-modal-content" class="p-6 overflow-y-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flex justify-center items-center h-48"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="loader"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const appData = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>diagnosis: [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>id: 'management',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>title: '決策與職責瓶頸',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>icon: '⚙️',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>content: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>observation: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: '觀察現象',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>points: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;決策流程中心化：&lt;/strong&gt;所有層級決策均需上呈至總經理，導致決策週期冗長。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;高階職能基層化：&lt;/strong&gt;副總處理零件採購信件、技術總監親自打磨零件等實例頻繁發生。'</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>analysis: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: '根本問題分析',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>points: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;人才錯配與機會成本：&lt;/strong&gt;高階主管時間被投入於低附加價值任務，錯失策略規劃的機會。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;中階管理層弱化：&lt;/strong&gt;缺乏授權導致中階主管能力無法培養，形成組織發展斷層。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;營運效率受損：&lt;/strong&gt;過長的決策鏈與不合理分工，直接導致內部流程效率低下。'</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>id: 'talent',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>title: '人才策略匱乏',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>icon: '👥',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>content: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>observation: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: '觀察現象',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>points: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;員工關懷與福利缺失：&lt;/strong&gt;飲水機老舊、提供付費咖啡等細節，影響歸屬感。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;管理制度僵化且雙重標準：&lt;/strong&gt;嚴格考勤，但會議卻常佔用員工休息時間且無補償。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;缺乏成長路徑與培訓：&lt;/strong&gt;人資角色被動，員工普遍感受不到成長前景。'</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>analysis: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: '根本問題分析',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>points: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;低員工敬業度：&lt;/strong&gt;將員工視為「工具」的管理思維，嚴重打擊士氣與認同感。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;人才吸引力不足：&lt;/strong&gt;傳統保守的文化難以吸引和留住新世代優秀人才。'</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>id: 'culture',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>title: '協作文化薄弱',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>icon: '🧱',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>content: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>observation: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: '觀察現象',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>points: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;孤島效應 (Silo Effect)：&lt;/strong&gt;各部門「各自為政」，缺乏橫向溝通，規避跨部門責任。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;消極的問題應對文化：&lt;/strong&gt;員工發現問題傾向沉默，待問題爆發後再相互推諉。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;低效的會議文化：&lt;/strong&gt;會議常臨時通知、缺乏議程、邀請過多無關人員。'</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>analysis: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: '根本問題分析',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>points: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;扼殺創新與敏捷性：&lt;/strong&gt;缺乏心理安全感的氛圍，使組織無法快速應對外部變化。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;隱性成本高昂：&lt;/strong&gt;大量無效會議與溝通不暢，直接浪費高昂的人力與時間成本。'</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>id: 'knowledge',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>title: '知識管理闕如',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>icon: '📚',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>content: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>observation: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: '觀察現象',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>points: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;隱性知識未顯性化：&lt;/strong&gt;關鍵知識僅存於資深員工記憶中，無書面手冊或SOP。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;資訊系統混亂：&lt;/strong&gt;共用文件夾架構與命名混亂，資料檢索困難。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;新進人員培訓不足：&lt;/strong&gt;培訓高度依賴口耳相傳，學習曲線陡峭。'</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>analysis: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>title: '根本問題分析',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>points: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;高營運風險：&lt;/strong&gt;核心知識與人員高度綁定，資深員工離職將導致知識斷層。',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'&lt;strong&gt;規模化發展受限：&lt;/strong&gt;缺乏可複製的知識體系，限制了未來的成長潛力。'</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>blueprint: [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>id: 'stage1',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>title: '第一階段 (前3個月)',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>subtitle: '效能優化與賦能授權',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>icon: '🚀',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>details: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>objective: '快速釋放高階人才產值，提升日常營運效率，建立授權基礎。',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>actions: [</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;高階主管職責再聚焦：&lt;/strong&gt;使用RACI責任分配矩陣，明確各層級權責。',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;低附加價值任務外包評估：&lt;/strong&gt;盤點並啟動基礎加工作業外包程序。',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;業務團隊職能專業化：&lt;/strong&gt;將行銷、網站管理等非核心職能剝離。'</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>id: 'stage2',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>title: '第二階段 (3-9個月)',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>subtitle: '人才活化與文化重塑',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>icon: '🌱',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>details: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>objective: '提升員工敬業度與歸屬感，建立正向、協作的組織文化。',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>actions: [</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;推動「有感」的員工關懷計畫：&lt;/strong&gt;改善辦公設施、尊重員工休息時間。',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;建立雙向溝通與回饋機制：&lt;/strong&gt;推行定期一對一會議與匿名建議平台。',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;優化會議管理流程：&lt;/strong&gt;推行高效會議準則（議程、目標、行動項目）。'</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>id: 'stage3',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>title: '第三階段 (9個月以上)',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>subtitle: '知識數位化與能力建構',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>icon: '🏛️',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>details: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>objective: '將個人經驗轉化為組織資產，建立可持續的人才發展與知識傳承體系。',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>actions: [</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;啟動知識盤點與標準化專案：&lt;/strong&gt;系統化梳理核心知識並製作電子文件。',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;建置中央知識平台 (Knowledge Hub)：&lt;/strong&gt;導入雲端知識庫工具，建立單一資訊來源。',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>'&lt;strong&gt;構建結構化的人才發展體系：&lt;/strong&gt;設計新進員工學習地圖與全員職涯發展路徑。'</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>]</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const navLinks = document.querySelectorAll('.nav-link');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const contentSections = document.querySelectorAll('.content-section');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const diagnosisTabsContainer = document.getElementById('diagnosis-tabs');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const diagnosisContentContainer = document.getElementById('diagnosis-content');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const blueprintStagesContainer = document.getElementById('blueprint-stages');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const blueprintDetailsContainer = document.getElementById('blueprint-details');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const modal = document.getElementById('gemini-modal');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const modalTitle = document.getElementById('gemini-modal-title');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const modalContent = document.getElementById('gemini-modal-content');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const modalCloseBtn = document.getElementById('gemini-modal-close');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const apiKey = "";<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>async function callGeminiAPI(prompt, maxRetries = 3) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const payload = { contents: chatHistory };</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>for (let i = 0; i &lt; maxRetries; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const response = await fetch(apiUrl, {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>method: 'POST',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>headers: { 'Content-Type': 'application/json' },</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>body: JSON.stringify(payload)</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (!response.ok) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>throw new Error(`HTTP error! status: ${response.status}`);</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const result = await response.json();</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (result.candidates &amp;&amp; result.candidates.length &gt; 0 &amp;&amp;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>result.candidates[0].content &amp;&amp; result.candidates[0].content.parts &amp;&amp;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>result.candidates[0].content.parts.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>return result.candidates[0].content.parts[0].text;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>throw new Error('Invalid response structure from Gemini API');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>} catch (error) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (i === maxRetries - 1) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>return `無法連接至 AI 助理。請稍後再試。錯誤：${error.message}`;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>await new Promise(res =&gt; setTimeout(res, Math.pow(2, i) * 1000));</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>function showModal(title) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modalTitle.textContent = title;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modalContent.innerHTML = `&lt;div class="flex justify-center items-center h-48"&gt;&lt;div class="loader"&gt;&lt;/div&gt;&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modal.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modal.classList.add('flex');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>function hideModal() {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modal.classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modal.classList.remove('flex');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>modalCloseBtn.addEventListener('click', hideModal);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>modal.addEventListener('click', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (e.target === modal) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>hideModal();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>function setupNavigation() {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>navLinks.forEach(link =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>link.addEventListener('click', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>e.preventDefault();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const targetId = link.getAttribute('href').substring(1);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>navLinks.forEach(l =&gt; l.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>link.classList.add('active');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>contentSections.forEach(section =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>section.classList.remove('active');</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>if (section.id === targetId) {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>section.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>window.scrollTo({ top: 0, behavior: 'smooth' });</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>function renderDiagnosisTabs() {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>appData.diagnosis.forEach((item, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const button = document.createElement('button');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>button.className = `tab-btn px-4 py-2 text-sm md:text-base font-medium rounded-full transition-colors duration-300 ${index === 0 ? 'active' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>button.dataset.id = item.id;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>button.innerHTML = `${item.icon} ${item.title}`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>diagnosisTabsContainer.appendChild(button);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>diagnosisTabsContainer.addEventListener('click', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (e.target.classList.contains('tab-btn')) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const targetId = e.target.dataset.id;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>document.querySelectorAll('.tab-btn').forEach(btn =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>btn.classList.remove('active', 'bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>e.target.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>e.target.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>renderDiagnosisContent(targetId);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>renderDiagnosisContent(appData.diagnosis[0].id);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>function renderDiagnosisContent(id) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const item = appData.diagnosis.find(d =&gt; d.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!item) return;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>diagnosisContentContainer.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="grid md:grid-cols-2 gap-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h4 class="text-xl font-bold mb-4 text-gray-800"&gt;${item.content.observation.title}&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;ul class="space-y-3 text-gray-600 list-disc list-inside"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>${item.content.observation.points.map(p =&gt; `&lt;li&gt;${p}&lt;/li&gt;`).join('')}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="border-t md:border-t-0 md:border-l border-gray-200 pt-6 md:pt-0 md:pl-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h4 class="text-xl font-bold mb-4 text-red-600"&gt;${item.content.analysis.title}&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;ul class="space-y-3 text-gray-600 list-disc list-inside"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>${item.content.analysis.points.map(p =&gt; `&lt;li&gt;${p}&lt;/li&gt;`).join('')}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="mt-8 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="gemini-btn text-white font-bold py-2 px-6 rounded-full" data-gemini-id="${id}" data-gemini-type="diagnosis"&gt;✨ 產生解決方案建議&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>diagnosisContentContainer.querySelector('[data-gemini-id]').addEventListener('click', handleGeminiClick);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>function renderBlueprintStages() {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>appData.blueprint.forEach((stage, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const card = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>card.className = `stage-card bg-white p-6 rounded-xl shadow-md border-2 border-transparent cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${index === 0 ? 'active' : ''}`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>card.dataset.id = stage.id;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>card.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="text-4xl mb-4"&gt;${stage.icon}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-lg font-bold"&gt;${stage.title}&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-gray-600"&gt;${stage.subtitle}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>blueprintStagesContainer.appendChild(card);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>blueprintStagesContainer.addEventListener('click', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const card = e.target.closest('.stage-card');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (card) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const targetId = card.dataset.id;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>document.querySelectorAll('.stage-card').forEach(c =&gt; c.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>card.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>renderBlueprintDetails(targetId);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>renderBlueprintDetails(appData.blueprint[0].id);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>function renderBlueprintDetails(id) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const stage = appData.blueprint.find(b =&gt; b.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!stage) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>blueprintDetailsContainer.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h4 class="text-xl font-bold mb-2 text-gray-800"&gt;目標：${stage.details.objective}&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-gray-600 mb-6"&gt;主要行動項目：&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;ul class="space-y-4 text-gray-700 list-decimal list-inside"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${stage.details.actions.map(a =&gt; `&lt;li&gt;${a}&lt;/li&gt;`).join('')}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="mt-8 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="gemini-btn text-white font-bold py-2 px-6 rounded-full" data-gemini-id="${id}" data-gemini-type="blueprint"&gt;✨ 草擬內部溝通郵件&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>blueprintDetailsContainer.querySelector('[data-gemini-id]').addEventListener('click', handleGeminiClick);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>async function handleGeminiClick(e) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const id = e.target.dataset.geminiId;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const type = e.target.dataset.geminiType;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let prompt = '';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let modalTitleText = '';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (type === 'diagnosis') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const item = appData.diagnosis.find(d =&gt; d.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>modalTitleText = `針對「${item.title}」的解決方案建議`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>prompt = `作為一名資深管理顧問，請針對以下的組織問題「${item.title}」，其具體現象為：「${item.content.observation.points.join('; ')}」，根本原因為：「${item.content.analysis.points.join('; ')}」。請提出三個具體、可執行的初步解決方案建議，並以點列式呈現。`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (type === 'blueprint') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const stage = appData.blueprint.find(b =&gt; b.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>modalTitleText = `關於「${stage.subtitle}」的內部溝通郵件草稿`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>prompt = `作為公司的新任領導者，請草擬一封清晰、簡潔且鼓舞人心的內部溝通郵件，向全體員工宣布即將啟動「${stage.title}: ${stage.subtitle}」。郵件需要說明這次變革的「為什麼」（目標是：${stage.details.objective}），並簡要提及將採取的行動（例如：${stage.details.actions.join(', ')}），以爭取員工的理解與支持。`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>showModal(modalTitleText);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const result = await callGeminiAPI(prompt);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modalContent.innerHTML = `&lt;div class="prose max-w-none"&gt;${result.replace(/\n/g, '&lt;br&gt;')}&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>function renderTimeAllocationChart() {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const ctx = document.getElementById('timeAllocationChart').getContext('2d');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>new Chart(ctx, {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>type: 'doughnut',</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>data: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>labels: ['低附加價值事務', '核心策略事務'],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>datasets: [{</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>data: [30, 70],</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>backgroundColor: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'rgba(255, 99, 132, 0.8)',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'rgba(54, 162, 235, 0.8)',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>],</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>borderColor: [</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'rgba(255, 99, 132, 1)',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>'rgba(54, 162, 235, 1)',</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>],</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>borderWidth: 1</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}]</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>options: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>responsive: true,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>maintainAspectRatio: false,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>plugins: {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>legend: {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>position: 'bottom',</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>labels: {</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>font: {</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>size: 14,</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>family: "'Noto Sans TC', sans-serif"</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>tooltip: {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>callbacks: {</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>label: function(context) {</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>let label = context.label || '';</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>if (label) {</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>label += ': ';</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>if (context.parsed !== null) {</p>
+<p class="p1"><span class="Apple-converted-space">                                            </span>label += context.parsed + '% 的工時';</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                                        </span>return label;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>setupNavigation();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderDiagnosisTabs();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderBlueprintStages();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderTimeAllocationChart();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
