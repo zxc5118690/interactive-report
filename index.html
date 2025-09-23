@@ -1,453 +1,436 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>互動式組織效能診斷報告</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #FDFBF8;
-            color: #3D405B;
-        }
-        .nav-link {
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-        }
-        .nav-link.active, .nav-link:hover {
-            color: #3A86FF;
-            border-bottom-color: #3A86FF;
-        }
-        .tab-btn.active {
-            background-color: #3A86FF;
-            color: #FFFFFF;
-        }
-        .stage-card.active {
-            border-color: #3A86FF;
-            box-shadow: 0 4px 14px 0 rgba(58, 134, 255, 0.1);
-        }
-        .content-section {
-            display: none;
-        }
-        .content-section.active {
-            display: block;
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>互動式組織效能診斷報告</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans TC', sans-serif; background-color: #FDFBF8; color: #3D405B; }
+    .nav-link { transition: all 0.3s ease; border-bottom: 2px solid transparent; }
+    .nav-link.active, .nav-link:hover { color: #3A86FF; border-bottom-color: #3A86FF; }
+    .tab-btn.active { background-color: #3A86FF; color: #FFFFFF; }
+    .stage-card.active { border-color: #3A86FF; box-shadow: 0 4px 14px 0 rgba(58, 134, 255, 0.1); }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+    .chart-container { position: relative; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+    @media (min-width: 768px) { .chart-container { height: 350px; } }
+  </style>
 </head>
 <body class="antialiased">
 
-    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-  <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-  <div>
-    <h1 class="text-xl md:text-2xl font-bold text-gray-800">組織效能診斷報告</h1>
-    <p class="text-sm text-gray-500">互動式網頁版</p>
-  </div>
+  <!-- Header -->
+  <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-6 py-4 flex flex-wrap md:flex-nowrap gap-3 justify-between items-center">
+      <div>
+        <h1 class="text-xl md:text-2xl font-bold text-gray-800">組織效能診斷報告</h1>
+        <p class="text-sm text-gray-500">互動式網頁版</p>
+      </div>
 
-  <div class="flex items-center space-x-4 w-1/2 md:w-auto">
-    <!-- 分頁列：手機可滑動，桌機維持水平排列 -->
-    <div class="flex md:flex space-x-6 overflow-x-auto no-scrollbar md:overflow-visible">
-      <a href="#overview"   class="nav-link active font-medium pb-1 shrink-0">總覽</a>
-      <a href="#diagnosis"  class="nav-link font-medium pb-1 shrink-0">問題診斷</a>
-      <a href="#blueprint"  class="nav-link font-medium pb-1 shrink-0">轉型藍圖</a>
-    </div>
+      <div class="flex items-center gap-3 md:gap-8">
+        <!-- 手機：下拉選單 -->
+        <div class="md:hidden">
+          <label for="mobile-nav" class="sr-only">選擇頁面</label>
+          <select id="mobile-nav" class="border rounded-lg px-3 py-2 text-sm">
+            <option value="overview">總覽</option>
+            <option value="diagnosis">問題診斷</option>
+            <option value="blueprint">轉型藍圖</option>
+          </select>
+        </div>
 
-    <a href="https://drive.google.com/file/d/1Yo27dNfvWhEypx-DojTncud2SGcFfO9z/view?usp=drive_link"
-       target="_blank" rel="noopener noreferrer"
-       class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300 shrink-0">
-      下載完整報告
-    </a>
-  </div>
-</nav>
+        <!-- 桌機：原分頁 -->
+        <div class="hidden md:flex space-x-8">
+          <a href="#overview"  class="nav-link active font-medium pb-1">總覽</a>
+          <a href="#diagnosis" class="nav-link font-medium pb-1">問題診斷</a>
+          <a href="#blueprint" class="nav-link font-medium pb-1">轉型藍圖</a>
+        </div>
 
-    </header>
+        <a href="https://drive.google.com/file/d/1Yo27dNfvWhEypx-DojTncud2SGcFfO9z/view?usp=drive_link"
+           target="_blank" rel="noopener noreferrer"
+           class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
+          下載完整報告
+        </a>
+      </div>
+    </nav>
+  </header>
 
-    <main class="container mx-auto px-6 py-8 md:py-12">
+  <!-- Main -->
+  <main class="container mx-auto px-6 py-8 md:py-12">
+    <section id="overview" class="content-section active scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-2">三大核心挑戰</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">公司成長動能受限於管理、人才與知識三大層面的內部瓶頸。</p>
+      </div>
 
-        <section id="overview" class="content-section active">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold mb-2">三大核心挑戰</h2>
-                <p class="text-lg text-gray-600 max-w-3xl mx-auto">公司成長動能受限於管理、人才與知識三大層面的內部瓶頸。</p>
-            </div>
+      <div class="grid md:grid-cols-3 gap-8 mb-16">
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80">
+          <div class="text-3xl mb-4 text-blue-500">➔</div>
+          <h3 class="text-xl font-bold mb-2">管理權責失衡</h3>
+          <p class="text-gray-600">高階主管過度涉入日常瑣事，決策效率低下，抑制中階人才成長與企業戰略規劃。</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80">
+          <div class="text-3xl mb-4 text-amber-500">➔</div>
+          <h3 class="text-xl font-bold mb-2">人才策略僵化</h3>
+          <p class="text-gray-600">缺乏系統性員工關懷與培訓，組織活力匱乏，難以吸引並留住追求成長的新世代人才。</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80">
+          <div class="text-3xl mb-4 text-emerald-500">➔</div>
+          <h3 class="text-xl font-bold mb-2">知識資產流失</h3>
+          <p class="text-gray-600">核心知識與流程高度依賴個人經驗，傳承面臨斷層風險，限制了企業的規模化擴張。</p>
+        </div>
+      </div>
 
-            <div class="grid md:grid-cols-3 gap-8 mb-16">
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80">
-                    <div class="text-3xl mb-4 text-blue-500">➔</div>
-                    <h3 class="text-xl font-bold mb-2">管理權責失衡</h3>
-                    <p class="text-gray-600">高階主管過度涉入日常瑣事，決策效率低下，抑制中階人才成長與企業戰略規劃。</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80">
-                    <div class="text-3xl mb-4 text-amber-500">➔</div>
-                    <h3 class="text-xl font-bold mb-2">人才策略僵化</h3>
-                    <p class="text-gray-600">缺乏系統性員工關懷與培訓，組織活力匱乏，難以吸引並留住追求成長的新世代人才。</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/80">
-                    <div class="text-3xl mb-4 text-emerald-500">➔</div>
-                    <h3 class="text-xl font-bold mb-2">知識資產流失</h3>
-                    <p class="text-gray-600">核心知識與流程高度依賴個人經驗，傳承面臨斷層風險，限制了企業的規模化擴張。</p>
-                </div>
-            </div>
+      <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80">
+        <h3 class="text-2xl font-bold text-center mb-2">高階管理層時間分配警訊</h3>
+        <p class="text-center text-gray-600 mb-6">初步估算，高階主管約有30%的寶貴工時被低附加價值事務所佔據。</p>
+        <div class="chart-container">
+          <canvas id="timeAllocationChart"></canvas>
+        </div>
+      </div>
+    </section>
 
-            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80">
-                <h3 class="text-2xl font-bold text-center mb-2">高階管理層時間分配警訊</h3>
-                <p class="text-center text-gray-600 mb-6">初步估算，高階主管約有30%的寶貴工時被低附加價值事務所佔據。</p>
-                <div class="chart-container">
-                    <canvas id="timeAllocationChart"></canvas>
-                </div>
-            </div>
-        </section>
+    <section id="diagnosis" class="content-section scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-2">四大核心發現</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">點擊下方頁籤，深入了解限制組織發展的根本問題。</p>
+      </div>
+      <div id="diagnosis-tabs" class="mb-8 flex flex-wrap justify-center gap-2 md:gap-4"></div>
+      <div id="diagnosis-content" class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80 min-h-[300px]"></div>
+    </section>
 
-        <section id="diagnosis" class="content-section">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold mb-2">四大核心發現</h2>
-                <p class="text-lg text-gray-600 max-w-3xl mx-auto">點擊下方頁籤，深入了解限制組織發展的根本問題。</p>
-            </div>
-            <div id="diagnosis-tabs" class="mb-8 flex flex-wrap justify-center gap-2 md:gap-4"></div>
-            <div id="diagnosis-content" class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80 min-h-[300px]"></div>
-        </section>
+    <section id="blueprint" class="content-section scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-2">三階段轉型行動藍圖</h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">一套由淺入深、循序漸進的系統性改革方案。點擊卡片查看各階段行動細節。</p>
+      </div>
+      <div id="blueprint-stages" class="grid md:grid-cols-3 gap-8"></div>
+      <div id="blueprint-details" class="mt-8 bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80 min-h-[200px]"></div>
+    </section>
+  </main>
 
-        <section id="blueprint" class="content-section">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold mb-2">三階段轉型行動藍圖</h2>
-                <p class="text-lg text-gray-600 max-w-3xl mx-auto">一套由淺入深、循序漸進的系統性改革方案。點擊卡片查看各階段行動細節。</p>
-            </div>
-            <div id="blueprint-stages" class="grid md:grid-cols-3 gap-8"></div>
-            <div id="blueprint-details" class="mt-8 bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200/80 min-h-[200px]"></div>
-        </section>
+  <footer class="text-center py-8 mt-12 border-t">
+    <p class="text-gray-500">&copy; 2025 策略顧問 沈文煜。此為基於真實觀察的模擬分析報告。</p>
+  </footer>
 
-    </main>
-    
-    <footer class="text-center py-8 mt-12 border-t">
-        <p class="text-gray-500">&copy; 2025 策略顧問 沈文煜。此為基於真實觀察的模擬分析報告。</p>
-    </footer>
-
-    <script>
-        const appData = {
-            diagnosis: [
-                {
-                    id: 'management',
-                    title: '決策與職責瓶頸',
-                    icon: '⚙️',
-                    content: {
-                        observation: {
-                            title: '觀察現象',
-                            points: [
-                                '<strong>決策流程中心化：</strong>所有層級決策均需上呈至總經理，導致決策週期冗長。',
-                                '<strong>高階職能基層化：</strong>副總處理零件採購信件、技術總監親自打磨零件等實例頻繁發生。'
-                            ]
-                        },
-                        analysis: {
-                            title: '根本問題分析',
-                            points: [
-                                '<strong>人才錯配與機會成本：</strong>高階主管時間被投入於低附加價值任務，錯失策略規劃的機會。',
-                                '<strong>中階管理層弱化：</strong>缺乏授權導致中階主管能力無法培養，形成組織發展斷層。',
-                                '<strong>營運效率受損：</strong>過長的決策鏈與不合理分工，直接導致內部流程效率低下。'
-                            ]
-                        }
-                    }
-                },
-                {
-                    id: 'talent',
-                    title: '人才策略匱乏',
-                    icon: '👥',
-                    content: {
-                        observation: {
-                            title: '觀察現象',
-                            points: [
-                                '<strong>員工關懷與福利缺失：</strong>飲水機老舊、提供付費咖啡等細節，影響歸屬感。',
-                                '<strong>管理制度僵化且雙重標準：</strong>嚴格考勤，但會議卻常佔用員工休息時間且無補償。',
-                                '<strong>缺乏成長路徑與培訓：</strong>人資角色被動，員工普遍感受不到成長前景。'
-                            ]
-                        },
-                        analysis: {
-                            title: '根本問題分析',
-                            points: [
-                                '<strong>低員工敬業度：</strong>將員工視為「工具」的管理思維，嚴重打擊士氣與認同感。',
-                                '<strong>人才吸引力不足：</strong>傳統保守的文化難以吸引和留住新世代優秀人才。'
-                            ]
-                        }
-                    }
-                },
-                {
-                    id: 'culture',
-                    title: '協作文化薄弱',
-                    icon: '🧱',
-                    content: {
-                        observation: {
-                            title: '觀察現象',
-                            points: [
-                                '<strong>孤島效應 (Silo Effect)：</strong>各部門「各自為政」，缺乏橫向溝通，規避跨部門責任。',
-                                '<strong>消極的問題應對文化：</strong>員工發現問題傾向沉默，待問題爆發後再相互推諉。',
-                                '<strong>低效的會議文化：</strong>會議常臨時通知、缺乏議程、邀請過多無關人員。'
-                            ]
-                        },
-                        analysis: {
-                            title: '根本問題分析',
-                            points: [
-                                '<strong>扼殺創新與敏捷性：</strong>缺乏心理安全感的氛圍，使組織無法快速應對外部變化。',
-                                '<strong>隱性成本高昂：</strong>大量無效會議與溝通不暢，直接浪費高昂的人力與時間成本。'
-                            ]
-                        }
-                    }
-                },
-                {
-                    id: 'knowledge',
-                    title: '知識管理闕如',
-                    icon: '📚',
-                    content: {
-                        observation: {
-                            title: '觀察現象',
-                            points: [
-                                '<strong>隱性知識未顯性化：</strong>關鍵知識僅存於資深員工記憶中，無書面手冊或SOP。',
-                                '<strong>資訊系統混亂：</strong>共用文件夾架構與命名混亂，資料檢索困難。',
-                                '<strong>新進人員培訓不足：</strong>培訓高度依賴口耳相傳，學習曲線陡峭。'
-                            ]
-                        },
-                        analysis: {
-                            title: '根本問題分析',
-                            points: [
-                                '<strong>高營運風險：</strong>核心知識與人員高度綁定，資深員工離職將導致知識斷層。',
-                                '<strong>規模化發展受限：</strong>缺乏可複製的知識體系，限制了未來的成長潛力。'
-                            ]
-                        }
-                    }
-                }
-            ],
-            blueprint: [
-                {
-                    id: 'stage1',
-                    title: '第一階段 (前3個月)',
-                    subtitle: '效能優化與賦能授權',
-                    icon: '🚀',
-                    details: {
-                        objective: '快速釋放高階人才產值，提升日常營運效率，建立授權基礎。',
-                        actions: [
-                            '<strong>高階主管職責再聚焦：</strong>使用RACI責任分配矩陣，明確各層級權責。',
-                            '<strong>低附加價值任務外包評估：</strong>盤點並啟動基礎加工作業外包程序。',
-                            '<strong>業務團隊職能專業化：</strong>將行銷、網站管理等非核心職能剝離。'
-                        ]
-                    }
-                },
-                {
-                    id: 'stage2',
-                    title: '第二階段 (3-9個月)',
-                    subtitle: '人才活化與文化重塑',
-                    icon: '🌱',
-                    details: {
-                        objective: '提升員工敬業度與歸屬感，建立正向、協作的組織文化。',
-                        actions: [
-                            '<strong>推動「有感」的員工關懷計畫：</strong>改善辦公設施、尊重員工休息時間。',
-                            '<strong>建立雙向溝通與回饋機制：</strong>推行定期一對一會議與匿名建議平台。',
-                            '<strong>優化會議管理流程：</strong>推行高效會議準則（議程、目標、行動項目）。'
-                        ]
-                    }
-                },
-                {
-                    id: 'stage3',
-                    title: '第三階段 (9個月以上)',
-                    subtitle: '知識數位化與能力建構',
-                    icon: '🏛️',
-                    details: {
-                        objective: '將個人經驗轉化為組織資產，建立可持續的人才發展與知識傳承體系。',
-                        actions: [
-                            '<strong>啟動知識盤點與標準化專案：</strong>系統化梳理核心知識並製作電子文件。',
-                            '<strong>建置中央知識平台 (Knowledge Hub)：</strong>導入雲端知識庫工具，建立單一資訊來源。',
-                            '<strong>構建結構化的人才發展體系：</strong>設計新進員工學習地圖與全員職涯發展路徑。'
-                        ]
-                    }
-                }
+  <!-- Script -->
+  <script>
+    const appData = {
+      diagnosis: [
+        {
+          id: 'management',
+          title: '決策與職責瓶頸',
+          icon: '⚙️',
+          content: {
+            observation: {
+              title: '觀察現象',
+              points: [
+                '<strong>決策流程中心化：</strong>所有層級決策均需上呈至總經理，導致決策週期冗長。',
+                '<strong>高階職能基層化：</strong>副總處理零件採購信件、技術總監親自打磨零件等實例頻繁發生。'
+              ]
+            },
+            analysis: {
+              title: '根本問題分析',
+              points: [
+                '<strong>人才錯配與機會成本：</strong>高階主管時間被投入於低附加價值任務，錯失策略規劃的機會。',
+                '<strong>中階管理層弱化：</strong>缺乏授權導致中階主管能力無法培養，形成組織發展斷層。',
+                '<strong>營運效率受損：</strong>過長的決策鏈與不合理分工，直接導致內部流程效率低下。'
+              ]
+            }
+          }
+        },
+        {
+          id: 'talent',
+          title: '人才策略匱乏',
+          icon: '👥',
+          content: {
+            observation: {
+              title: '觀察現象',
+              points: [
+                '<strong>員工關懷與福利缺失：</strong>飲水機老舊、提供付費咖啡等細節，影響歸屬感。',
+                '<strong>管理制度僵化且雙重標準：</strong>嚴格考勤，但會議卻常佔用員工休息時間且無補償。',
+                '<strong>缺乏成長路徑與培訓：</strong>人資角色被動，員工普遍感受不到成長前景。'
+              ]
+            },
+            analysis: {
+              title: '根本問題分析',
+              points: [
+                '<strong>低員工敬業度：</strong>將員工視為「工具」的管理思維，嚴重打擊士氣與認同感。',
+                '<strong>人才吸引力不足：</strong>傳統保守的文化難以吸引和留住新世代優秀人才。'
+              ]
+            }
+          }
+        },
+        {
+          id: 'culture',
+          title: '協作文化薄弱',
+          icon: '🧱',
+          content: {
+            observation: {
+              title: '觀察現象',
+              points: [
+                '<strong>孤島效應 (Silo Effect)：</strong>各部門「各自為政」，缺乏橫向溝通，規避跨部門責任。',
+                '<strong>消極的問題應對文化：</strong>員工發現問題傾向沉默，待問題爆發後再相互推諉。',
+                '<strong>低效的會議文化：</strong>會議常臨時通知、缺乏議程、邀請過多無關人員。'
+              ]
+            },
+            analysis: {
+              title: '根本問題分析',
+              points: [
+                '<strong>扼殺創新與敏捷性：</strong>缺乏心理安全感的氛圍，使組織無法快速應對外部變化。',
+                '<strong>隱性成本高昂：</strong>大量無效會議與溝通不暢，直接浪費高昂的人力與時間成本。'
+              ]
+            }
+          }
+        },
+        {
+          id: 'knowledge',
+          title: '知識管理闕如',
+          icon: '📚',
+          content: {
+            observation: {
+              title: '觀察現象',
+              points: [
+                '<strong>隱性知識未顯性化：</strong>關鍵知識僅存於資深員工記憶中，無書面手冊或SOP。',
+                '<strong>資訊系統混亂：</strong>共用文件夾架構與命名混亂，資料檢索困難。',
+                '<strong>新進人員培訓不足：</strong>培訓高度依賴口耳相傳，學習曲線陡峭。'
+              ]
+            },
+            analysis: {
+              title: '根本問題分析',
+              points: [
+                '<strong>高營運風險：</strong>核心知識與人員高度綁定，資深員工離職將導致知識斷層。',
+                '<strong>規模化發展受限：</strong>缺乏可複製的知識體系，限制了未來的成長潛力。'
+              ]
+            }
+          }
+        }
+      ],
+      blueprint: [
+        {
+          id: 'stage1',
+          title: '第一階段 (前3個月)',
+          subtitle: '效能優化與賦能授權',
+          icon: '🚀',
+          details: {
+            objective: '快速釋放高階人才產值，提升日常營運效率，建立授權基礎。',
+            actions: [
+              '<strong>高階主管職責再聚焦：</strong>使用RACI責任分配矩陣，明確各層級權責。',
+              '<strong>低附加價值任務外包評估：</strong>盤點並啟動基礎加工作業外包程序。',
+              '<strong>業務團隊職能專業化：</strong>將行銷、網站管理等非核心職能剝離。'
             ]
-        };
+          }
+        },
+        {
+          id: 'stage2',
+          title: '第二階段 (3-9個月)',
+          subtitle: '人才活化與文化重塑',
+          icon: '🌱',
+          details: {
+            objective: '提升員工敬業度與歸屬感，建立正向、協作的組織文化。',
+            actions: [
+              '<strong>推動「有感」的員工關懷計畫：</strong>改善辦公設施、尊重員工休息時間。',
+              '<strong>建立雙向溝通與回饋機制：</strong>推行定期一對一會議與匿名建議平台。',
+              '<strong>優化會議管理流程：</strong>推行高效會議準則（議程、目標、行動項目）。'
+            ]
+          }
+        },
+        {
+          id: 'stage3',
+          title: '第三階段 (9個月以上)',
+          subtitle: '知識數位化與能力建構',
+          icon: '🏛️',
+          details: {
+            objective: '將個人經驗轉化為組織資產，建立可持續的人才發展與知識傳承體系。',
+            actions: [
+              '<strong>啟動知識盤點與標準化專案：</strong>系統化梳理核心知識並製作電子文件。',
+              '<strong>建置中央知識平台 (Knowledge Hub)：</strong>導入雲端知識庫工具，建立單一資訊來源。',
+              '<strong>構建結構化的人才發展體系：</strong>設計新進員工學習地圖與全員職涯發展路徑。'
+            ]
+          }
+        }
+      ]
+    };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const contentSections = document.querySelectorAll('.content-section');
-            const diagnosisTabsContainer = document.getElementById('diagnosis-tabs');
-            const diagnosisContentContainer = document.getElementById('diagnosis-content');
-            const blueprintStagesContainer = document.getElementById('blueprint-stages');
-            const blueprintDetailsContainer = document.getElementById('blueprint-details');
+    // ====== 導覽控制與同步（手機下拉 / 桌機分頁 / URL hash） ======
+    function showSectionById(targetId, scrollTop = true) {
+      const hash = `#${targetId}`;
+      // 切換 active 樣式（桌機分頁）
+      document.querySelectorAll('.nav-link').forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === hash);
+      });
+      // 顯示對應內容
+      document.querySelectorAll('.content-section').forEach(s => {
+        s.classList.toggle('active', s.id === targetId);
+      });
+      // 同步手機下拉
+      const mobile = document.getElementById('mobile-nav');
+      if (mobile) mobile.value = targetId;
+      // 捲到頂（避免 sticky header 遮擋）
+      if (scrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-            function setupNavigation() {
-                navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const targetId = link.getAttribute('href').substring(1);
+    function showSectionByHash(hash) {
+      const id = (hash || '#overview').replace('#', '');
+      showSectionById(id, false);
+    }
 
-                        navLinks.forEach(l => l.classList.remove('active'));
-                        link.classList.add('active');
+    document.addEventListener('DOMContentLoaded', () => {
+      const navLinks = document.querySelectorAll('.nav-link');
+      const mobileNav = document.getElementById('mobile-nav');
 
-                        contentSections.forEach(section => {
-                            section.classList.remove('active');
-                            if (section.id === targetId) {
-                                section.classList.add('active');
-                            }
-                        });
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    });
-                });
-            }
-
-            function renderDiagnosisTabs() {
-                appData.diagnosis.forEach((item, index) => {
-                    const button = document.createElement('button');
-                    button.className = `tab-btn px-4 py-2 text-sm md:text-base font-medium rounded-full transition-colors duration-300 ${index === 0 ? 'active' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`;
-                    button.dataset.id = item.id;
-                    button.innerHTML = `${item.icon} ${item.title}`;
-                    diagnosisTabsContainer.appendChild(button);
-                });
-
-                diagnosisTabsContainer.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('tab-btn')) {
-                        const targetId = e.target.dataset.id;
-                        document.querySelectorAll('.tab-btn').forEach(btn => {
-                            btn.classList.remove('active', 'bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-                            btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-                        });
-                        e.target.classList.add('active');
-                        e.target.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-                        renderDiagnosisContent(targetId);
-                    }
-                });
-
-                renderDiagnosisContent(appData.diagnosis[0].id);
-            }
-
-            function renderDiagnosisContent(id) {
-                const item = appData.diagnosis.find(d => d.id === id);
-                if (!item) return;
-                
-                diagnosisContentContainer.innerHTML = `
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="text-xl font-bold mb-4 text-gray-800">${item.content.observation.title}</h4>
-                            <ul class="space-y-3 text-gray-600 list-disc list-inside">
-                                ${item.content.observation.points.map(p => `<li>${p}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="border-t md:border-t-0 md:border-l border-gray-200 pt-6 md:pt-0 md:pl-8">
-                            <h4 class="text-xl font-bold mb-4 text-red-600">${item.content.analysis.title}</h4>
-                            <ul class="space-y-3 text-gray-600 list-disc list-inside">
-                                ${item.content.analysis.points.map(p => `<li>${p}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            function renderBlueprintStages() {
-                appData.blueprint.forEach((stage, index) => {
-                    const card = document.createElement('div');
-                    card.className = `stage-card bg-white p-6 rounded-xl shadow-md border-2 border-transparent cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${index === 0 ? 'active' : ''}`;
-                    card.dataset.id = stage.id;
-                    card.innerHTML = `
-                        <div class="text-4xl mb-4">${stage.icon}</div>
-                        <h3 class="text-lg font-bold">${stage.title}</h3>
-                        <p class="text-gray-600">${stage.subtitle}</p>
-                    `;
-                    blueprintStagesContainer.appendChild(card);
-                });
-
-                blueprintStagesContainer.addEventListener('click', (e) => {
-                    const card = e.target.closest('.stage-card');
-                    if (card) {
-                        const targetId = card.dataset.id;
-                        document.querySelectorAll('.stage-card').forEach(c => c.classList.remove('active'));
-                        card.classList.add('active');
-                        renderBlueprintDetails(targetId);
-                    }
-                });
-
-                renderBlueprintDetails(appData.blueprint[0].id);
-            }
-
-            function renderBlueprintDetails(id) {
-                const stage = appData.blueprint.find(b => b.id === id);
-                if (!stage) return;
-
-                blueprintDetailsContainer.innerHTML = `
-                    <h4 class="text-xl font-bold mb-2 text-gray-800">目標：${stage.details.objective}</h4>
-                    <p class="text-gray-600 mb-6">主要行動項目：</p>
-                    <ul class="space-y-4 text-gray-700 list-decimal list-inside">
-                        ${stage.details.actions.map(a => `<li>${a}</li>`).join('')}
-                    </ul>
-                `;
-            }
-
-            function renderTimeAllocationChart() {
-                const ctx = document.getElementById('timeAllocationChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['低附加價值事務', '核心策略事務'],
-                        datasets: [{
-                            data: [30, 70],
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.8)',
-                                'rgba(54, 162, 235, 0.8)',
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    font: {
-                                        size: 14,
-                                        family: "'Noto Sans TC', sans-serif"
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed !== null) {
-                                            label += context.parsed + '% 的工時';
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            setupNavigation();
-            renderDiagnosisTabs();
-            renderBlueprintStages();
-            renderTimeAllocationChart();
+      // 桌機分頁點擊
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('href').substring(1);
+          // 更新 URL hash 以利分享 / 回上一頁
+          history.pushState(null, '', `#${targetId}`);
+          showSectionById(targetId);
         });
-    </script>
+      });
+
+      // 手機下拉變更
+      mobileNav?.addEventListener('change', (e) => {
+        const targetId = e.target.value;
+        history.pushState(null, '', `#${targetId}`);
+        showSectionById(targetId);
+      });
+
+      // 進站與 hash 變更行為
+      showSectionByHash(location.hash);
+      window.addEventListener('hashchange', () => showSectionByHash(location.hash));
+
+      // ====== 以下為原互動元件渲染 ======
+      const diagnosisTabsContainer = document.getElementById('diagnosis-tabs');
+      const diagnosisContentContainer = document.getElementById('diagnosis-content');
+      const blueprintStagesContainer = document.getElementById('blueprint-stages');
+      const blueprintDetailsContainer = document.getElementById('blueprint-details');
+
+      function renderDiagnosisTabs() {
+        appData.diagnosis.forEach((item, index) => {
+          const button = document.createElement('button');
+          button.className = `tab-btn px-4 py-2 text-sm md:text-base font-medium rounded-full transition-colors duration-300 ${index === 0 ? 'active' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`;
+          button.dataset.id = item.id;
+          button.innerHTML = `${item.icon} ${item.title}`;
+          diagnosisTabsContainer.appendChild(button);
+        });
+
+        diagnosisTabsContainer.addEventListener('click', (e) => {
+          const target = e.target.closest('.tab-btn');
+          if (!target) return;
+          const targetId = target.dataset.id;
+          document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+          });
+          target.classList.add('active');
+          target.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+          renderDiagnosisContent(targetId);
+        });
+
+        renderDiagnosisContent(appData.diagnosis[0].id);
+      }
+
+      function renderDiagnosisContent(id) {
+        const item = appData.diagnosis.find(d => d.id === id);
+        if (!item) return;
+        diagnosisContentContainer.innerHTML = `
+          <div class="grid md:grid-cols-2 gap-8">
+            <div>
+              <h4 class="text-xl font-bold mb-4 text-gray-800">${item.content.observation.title}</h4>
+              <ul class="space-y-3 text-gray-600 list-disc list-inside">
+                ${item.content.observation.points.map(p => `<li>${p}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="border-t md:border-t-0 md:border-l border-gray-200 pt-6 md:pt-0 md:pl-8">
+              <h4 class="text-xl font-bold mb-4 text-red-600">${item.content.analysis.title}</h4>
+              <ul class="space-y-3 text-gray-600 list-disc list-inside">
+                ${item.content.analysis.points.map(p => `<li>${p}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderBlueprintStages() {
+        appData.blueprint.forEach((stage, index) => {
+          const card = document.createElement('div');
+          card.className = `stage-card bg-white p-6 rounded-xl shadow-md border-2 border-transparent cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${index === 0 ? 'active' : ''}`;
+          card.dataset.id = stage.id;
+          card.innerHTML = `
+            <div class="text-4xl mb-4">${stage.icon}</div>
+            <h3 class="text-lg font-bold">${stage.title}</h3>
+            <p class="text-gray-600">${stage.subtitle}</p>
+          `;
+          blueprintStagesContainer.appendChild(card);
+        });
+
+        blueprintStagesContainer.addEventListener('click', (e) => {
+          const card = e.target.closest('.stage-card');
+          if (!card) return;
+          const targetId = card.dataset.id;
+          document.querySelectorAll('.stage-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          renderBlueprintDetails(targetId);
+        });
+
+        renderBlueprintDetails(appData.blueprint[0].id);
+      }
+
+      function renderBlueprintDetails(id) {
+        const stage = appData.blueprint.find(b => b.id === id);
+        if (!stage) return;
+        blueprintDetailsContainer.innerHTML = `
+          <h4 class="text-xl font-bold mb-2 text-gray-800">目標：${stage.details.objective}</h4>
+          <p class="text-gray-600 mb-6">主要行動項目：</p>
+          <ul class="space-y-4 text-gray-700 list-decimal list-inside">
+            ${stage.details.actions.map(a => `<li>${a}</li>`).join('')}
+          </ul>
+        `;
+      }
+
+      function renderTimeAllocationChart() {
+        const ctx = document.getElementById('timeAllocationChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['低附加價值事務', '核心策略事務'],
+            datasets: [{
+              data: [30, 70],
+              backgroundColor: ['rgba(255, 99, 132, 0.8)','rgba(54, 162, 235, 0.8)'],
+              borderColor: ['rgba(255, 99, 132, 1)','rgba(54, 162, 235, 1)'],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { font: { size: 14, family: "'Noto Sans TC', sans-serif" } } },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    let label = context.label || '';
+                    if (label) label += ': ';
+                    if (context.parsed !== null) label += context.parsed + '% 的工時';
+                    return label;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // 初始化互動元件
+      renderDiagnosisTabs();
+      renderBlueprintStages();
+      renderTimeAllocationChart();
+    });
+  </script>
 </body>
 </html>
-
